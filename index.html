@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Форма ввода</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <style>
+      .error {
+        border: 2px solid red;
+      }
+    </style>
+  </head>
+  <body>
+    <form enctype="multipart/form-data">
+      <div>
+        <input type="text" id="fullname_nominative" name="fullname_nominative" placeholder="ФИО в именительном падеже">
+      </div>
+      <div>
+        <input type="text" id="fullname_genitive" name="fullname_genitive" placeholder="ФИО в родительном падеже">
+      </div>
+      <div>
+        <input type="text" id="passport_series" name="passport_series" placeholder="Серия паспорта (4 цифры)">
+      </div>
+      <div>
+        <input type="text" id="passport_number" name="passport_number" placeholder="Номер паспорта (6 цифр)">
+      </div>
+      <div>
+        <input type="text" id="passport_issued_by" name="passport_issued_by" placeholder="Кем выдан паспорт">
+      </div>
+      <div>
+        <input type="text" id="passport_department_code" name="passport_department_code" placeholder="Код подразделения">
+      </div>
+      <div>
+        <input type="text" id="passport_issue_date" name="passport_issue_date" placeholder="Дата выдачи паспорта (ДД.ММ.ГГГГ)">
+      </div>
+      <div>
+        <input type="text" id="inn" name="inn" placeholder="ИНН (12 цифр)">
+      </div>
+      <div>
+        <input type="text" id="snils" name="snils" placeholder="СНИЛС (11 цифр)">
+      </div>
+      <div>
+        <input type="text" id="phone" inputmode="numeric" name="phone" placeholder="Номер телефона (+7XXXXXXXXXX)">
+      </div>
+      <div>
+        <input type="email" id="email" name="email" placeholder="Адрес электронной почты">
+      </div>
+      <div>
+        <input type="text" id="bank_inn" name="bank_inn" placeholder="ИНН банка (10 цифр)">
+      </div>
+      <div>
+        <input type="text" id="bank_bik" name="bank_bik" placeholder="БИК банка (9 цифр)">
+      </div>
+      <div>
+        <input type="text" id="bank_cor_account" name="bank_cor_account" placeholder="Корр. счет банка (20 цифр)">
+      </div>
+      <div>
+        <input type="text" id="bank_checking_account" name="bank_checking_account" placeholder="Расчетный счет банка (20 цифр)">
+      </div>
+      <div id="error"></div>
+      <div class="button-group">
+        <button type="submit" id="submit">Отправить</button>
+        <button type="reset" id="reset" style="margin-left: 10px">Отмена</button>
+      </div>
+    </form>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+  let tg = window.Telegram.WebApp;
+  let submit = document.getElementById("submit");
+  let reset = document.getElementById("reset");
+
+  submit.addEventListener("click", (event) => {
+    event.preventDefault();
+
+    let fullnameNominative = document.getElementById("fullname_nominative");
+    let fullnameGenitive = document.getElementById("fullname_genitive");
+    let passportSeries = document.getElementById("passport_series");
+    let passportNumber = document.getElementById("passport_number");
+    let passportIssuedBy = document.getElementById("passport_issued_by");
+    let passportDepartmentCode = document.getElementById("passport_department_code");
+    let passportIssueDate = document.getElementById("passport_issue_date");
+    let inn = document.getElementById("inn");
+    let snils = document.getElementById("snils");
+    let phone = document.getElementById("phone");
+    let email = document.getElementById("email");
+    let bankInn = document.getElementById("bank_inn");
+    let bankBik = document.getElementById("bank_bik");
+    let bankCorAccount = document.getElementById("bank_cor_account");
+    let bankCheckingAccount = document.getElementById("bank_checking_account");
+    let error = document.getElementById("error");
+
+    error.innerText = "";
+    let invalidFields = [];
+
+    if (fullnameNominative.value.trim() === "") {
+      fullnameNominative.classList.add("error");
+      invalidFields.push("ФИО в именительном падеже");
+    } else {
+      fullnameNominative.classList.remove("error");
+    }
+
+    if (fullnameGenitive.value.trim() === "") {
+      fullnameGenitive.classList.add("error");
+      invalidFields.push("ФИО в родительном падеже");
+    } else {
+      fullnameGenitive.classList.remove("error");
+    }
+
+    if (passportSeries.value.trim() === "" || !/^\d{4}$/.test(passportSeries.value)) {
+      passportSeries.classList.add("error");
+      invalidFields.push("Серия паспорта (4 цифры)");
+    } else {
+      passportSeries.classList.remove("error");
+    }
+
+    if (passportNumber.value.trim() === "" || !/^\d{6}$/.test(passportNumber.value)) {
+      passportNumber.classList.add("error");
+      invalidFields.push("Номер паспорта (6 цифр)");
+    } else {
+      passportNumber.classList.remove("error");
+    }
+
+    if (passportIssuedBy.value.trim() === "") {
+      passportIssuedBy.classList.add("error");
+      invalidFields.push("Кем выдан паспорт");
+    } else {
+      passportIssuedBy.classList.remove("error");
+    }
+
+    if (passportDepartmentCode.value.trim() === "") {
+      passportDepartmentCode.classList.add("error");
+      invalidFields.push("Код подразделения");
+    } else {
+      passportDepartmentCode.classList.remove("error");
+    }
+
+    if (passportIssueDate.value.trim() === "" || !/^\d{2}\.\d{2}\.\d{4}$/.test(passportIssueDate.value)) {
+      passportIssueDate.classList.add("error");
+      invalidFields.push("Дата выдачи паспорта (ДД.ММ.ГГГГ)");
+    } else {
+      passportIssueDate.classList.remove("error");
+    }
+
+    if (inn.value.trim() === "" || !/^\d{12}$/.test(inn.value)) {
+      inn.classList.add("error");
+      invalidFields.push("ИНН (12 цифр)");
+    } else {
+      inn.classList.remove("error");
+    }
+
+    if (snils.value.trim() === "" || !/^\d{11}$/.test(snils.value)) {
+      snils.classList.add("error");
+      invalidFields.push("СНИЛС (11 цифр)");
+    } else {
+      snils.classList.remove("error");
+    }
+
+    if (phone.value.trim() === "" || !/^\+7\d{10}$/.test(phone.value)) {
+      phone.classList.add("error");
+      invalidFields.push("Номер телефона (+7XXXXXXXXXX)");
+    } else {
+      phone.classList.remove("error");
+    }
+
+    if (email.value.trim() === "" || !/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/i.test(email.value)) {
+      email.classList.add("error");
+      invalidFields.push("Адрес электронной почты");
+    } else {
+      email.classList.remove("error");
+    }
+
+    if (bankInn.value.trim() === "" || !/^\d{10}$/.test(bankInn.value)) {
+      bankInn.classList.add("error");
+      invalidFields.push("ИНН банка (10 цифр)");
+    } else {
+      bankInn.classList.remove("error");
+    }
+
+    if (bankBik.value.trim() === "" || !/^\d{9}$/.test(bankBik.value)) {
+      bankBik.classList.add("error");
+      invalidFields.push("БИК банка (9 цифр)");
+    } else {
+      bankBik.classList.remove("error");
+    }
+
+    if (bankCorAccount.value.trim() === "" || !/^\d{20}$/.test(bankCorAccount.value)) {
+      bankCorAccount.classList.add("error");
+      invalidFields.push("Корр. счет банка (20 цифр)");
+    } else {
+      bankCorAccount.classList.remove("error");
+    }
+
+    if (bankCheckingAccount.value.trim() === "" || !/^\d{20}$/.test(bankCheckingAccount.value)) {
+      bankCheckingAccount.classList.add("error");
+      invalidFields.push("Расчетный счет банка (20 цифр)");
+    } else {
+      bankCheckingAccount.classList.remove("error");
+    }
+
+    if (invalidFields.length > 0) {
+      error.innerText = "Пожалуйста, заполните следующие поля корректно: " + invalidFields.join(", ");
+      return;
+    }
+
+    let data = {
+      fullname_nominative: fullnameNominative.value,
+      fullname_genitive: fullnameGenitive.value,
+      passport_series: passportSeries.value,
+      passport_number: passportNumber.value,
+      passport_issued_by: passportIssuedBy.value,
+      passport_department_code: passportDepartmentCode.value,
+      passport_issue_date: passportIssueDate.value,
+      inn: inn.value,
+      snils: snils.value,
+      phone: phone.value,
+      email: email.value,
+      bank_inn: bankInn.value,
+      bank_bik: bankBik.value,
+      bank_cor_account: bankCorAccount.value,
+      bank_checking_account: bankCheckingAccount.value,
+    };
+
+    console.log(JSON.stringify(data));
+    tg.close();
+  });
+
+  reset.addEventListener("click", () => {
+    tg.close();
+  });
+</script>
+</body>
+</html>
