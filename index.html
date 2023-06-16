@@ -75,15 +75,19 @@
       let specialtiesInput = document.getElementById("position");
       let specialtiesList = document.getElementById("specialties");
 
-      // Загрузка данных из specialties.json
       fetch('specialties.json')
         .then(response => response.json())
         .then(data => {
-          // Заполнение списка подсказок
-          data.forEach(specialty => {
-            let option = document.createElement('option');
-            option.value = specialty;
-            specialtiesList.appendChild(option);
+          specialtiesInput.addEventListener("input", () => {
+            let inputText = specialtiesInput.value.toLowerCase();
+            let filteredSpecialties = data.filter(specialty => specialty.toLowerCase().startsWith(inputText));
+
+            specialtiesList.innerHTML = "";
+            filteredSpecialties.forEach(specialty => {
+              let option = document.createElement('option');
+              option.value = specialty;
+              specialtiesList.appendChild(option);
+            });
           });
         })
         .catch(error => console.error('Ошибка при загрузке данных specialties.json:', error));
@@ -125,7 +129,7 @@
           return;
         }
 
-        let data = {
+        let formData = {
           position: position.value,
           fullname_nominative: fullnameNominative.value,
           fullname_genitive: fullnameGenitive.value,
@@ -147,7 +151,7 @@
         // Отправка данных в Telegram посредством Web-App
         let tg = window.Telegram.WebApp;
         if (tg) {
-          tg.postMessage(JSON.stringify(data));
+          tg.postMessage(JSON.stringify(formData));
           tg.close();
         } else {
           console.error("Telegram WebApp не найден.");
